@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123b52">
+<meta name="description" content="سلامتی کریمی؛ آموزش و مشاوره آگاهی‌بخش در زمینه سلامت باروری، ناباروری و سلامت زنان و مردان.">
+<title>سلامتی کریمی | مشاوره و آموزش سلامت باروری</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+:root{--navy:#123b52;--teal:#168b86;--mint:#e9f5f2;--ink:#19313d;--muted:#657780;--paper:#fbfdfc;--line:#e3ece9;--gold:#d6a85d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Vazirmatn",Tahoma,sans-serif;line-height:1.95}
+a{color:inherit;text-decoration:none}.wrap{width:min(1120px,92%);margin:auto}
+header{position:sticky;top:0;z-index:5;background:#fbfdfcee;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:11px;font-weight:800;color:var(--navy);font-size:1.1rem}
+.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,var(--teal),var(--navy));display:grid;place-items:center;color:white;font-size:1.3rem}
+.links{display:flex;gap:24px;color:#526771;font-size:.92rem}.links a:hover{color:var(--teal)}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 20px;border-radius:12px;background:var(--teal);color:white;font-weight:700;border:1px solid var(--teal);transition:.2s}.btn:hover{transform:translateY(-2px);filter:brightness(.96)}.btn.outline{background:transparent;color:var(--navy);border-color:#b8d2cc}
+.hero{padding:78px 0 68px;background:radial-gradient(circle at 12% 18%,#d9eee8 0,transparent 30%),linear-gradient(120deg,#f4faf8,#edf6f4)}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center}.eyebrow{display:inline-block;background:#dcefeb;color:#176d68;border-radius:99px;padding:5px 13px;font-size:.84rem;font-weight:700}
+h1{font-size:clamp(2rem,4vw,3.35rem);line-height:1.5;color:var(--navy);margin:17px 0}.hero p{color:#536a73;font-size:1.06rem;max-width:650px;margin:0 0 25px}.actions{display:flex;gap:12px;flex-wrap:wrap}
+.visual{min-height:340px;border-radius:30px;background:linear-gradient(145deg,#16475b,#147f7a);position:relative;overflow:hidden;padding:30px;color:white;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 22px 55px #123b5222}
+.visual:before,.visual:after{content:"";position:absolute;border:1px solid #ffffff30;border-radius:50%;width:280px;height:280px;top:-100px;left:-60px}.visual:after{width:190px;height:190px;top:-55px;left:-15px}
+.visual .symbol{position:absolute;top:40px;right:35px;font-size:6rem;opacity:.9}.visual strong{font-size:1.55rem;position:relative}.visual span{color:#d6eeea;position:relative}
+section{padding:70px 0}.section-head{text-align:center;max-width:700px;margin:0 auto 35px}.section-head h2{font-size:1.9rem;color:var(--navy);margin:0 0 8px}.section-head p{color:var(--muted);margin:0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:white;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 8px 25px #123b5208}.card .ico{width:48px;height:48px;border-radius:15px;background:var(--mint);display:grid;place-items:center;font-size:1.45rem;margin-bottom:13px}.card h3{color:var(--navy);margin:0 0 7px;font-size:1.12rem}.card p{color:var(--muted);font-size:.94rem;margin:0}
+.about{background:#f0f7f5}.about-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:45px;align-items:center}.about-box{background:white;border:1px solid var(--line);padding:28px;border-radius:24px}.about-box h2{color:var(--navy);font-size:1.8rem;margin-top:0}.ticks{padding:0;list-style:none}.ticks li{margin:10px 0;color:#526771}.ticks li:before{content:"✓";color:var(--teal);font-weight:800;margin-left:9px}
+.notice{font-size:.86rem;color:#687980;background:#f8fbfa;border-right:3px solid var(--gold);padding:12px 15px;border-radius:8px}
+.cta{background:var(--navy);color:white;border-radius:28px;padding:38px;display:flex;align-items:center;justify-content:space-between;gap:24px}.cta h2{font-size:1.65rem;margin:0 0 5px}.cta p{color:#d2e2e5;margin:0}.cta .btn{background:white;color:var(--navy);border-color:white;white-space:nowrap}
+.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.contact-item{background:white;border:1px solid var(--line);padding:22px;border-radius:17px}.contact-item small{color:var(--muted);display:block}.contact-item strong{color:var(--navy);font-size:1.05rem;display:block;direction:ltr;text-align:right}.contact-item p{margin-bottom:0}
+footer{padding:26px 0;border-top:1px solid var(--line);color:#75858b;font-size:.85rem}.foot{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+@media(max-width:800px){.links{display:none}.hero-grid,.about-grid{grid-template-columns:1fr}.visual{min-height:260px}.grid{grid-template-columns:1fr 1fr}.contact-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.hero{padding:52px 0}.nav{height:66px}.brand{font-size:1rem}.btn{padding:10px 15px}.cta{padding:26px;align-items:flex-start;flex-direction:column}.visual{min-height:230px}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="#home"><span class="logo">س</span><span>سلامتی کریمی</span></a>
+  <nav class="links"><a href="#services">حوزه‌های مشاوره</a><a href="#about">درباره مجموعه</a><a href="#contact">ارتباط با ما</a></nav>
+  <a class="btn" href="#contact">درخواست ارتباط</a>
+</div></header>
+
+<main>
+<section class="hero" id="home"><div class="wrap hero-grid">
+  <div>
+    <span class="eyebrow">آگاهی، همراهی، انتخاب آگاهانه</span>
+    <h1>سلامتی کریمی؛<br>همراه آگاه شما در مسیر سلامت باروری و خانواده</h1>
+    <p>در سلامتی کریمی، با رویکرد آموزشی و مشاوره‌ای تلاش می‌کنیم مفاهیم مرتبط با سلامت باروری، ناباروری و سلامت زنان و مردان را ساده‌تر و روشن‌تر توضیح دهیم؛ تا بتوانید پرسش‌های خود را آگاهانه‌تر با پزشک و متخصص مربوطه مطرح کنید.</p>
+    <div class="actions"><a class="btn" href="#services">آشنایی با حوزه‌ها</a><a class="btn outline" href="#contact">راه‌های ارتباطی</a></div>
+  </div>
+  <div class="visual"><div class="symbol">✿</div><strong>آگاهی بیشتر، انتخاب بهتر</strong><span>مشاوره و آموزش در مسیر سلامت باروری</span></div>
+</div></section>
+
+<section id="services"><div class="wrap">
+  <div class="section-head"><h2>حوزه‌های مشاوره و آموزش</h2><p>خدمات مجموعه در چارچوب آموزش و مشاوره عمومی ارائه می‌شود و جایگزین ارزیابی، تشخیص یا درمان پزشکی نیست.</p></div>
+  <div class="grid">
+    <article class="card"><div class="ico">🌷</div><h3>سلامت زنان</h3><p>آگاهی‌بخشی درباره چرخه قاعدگی، تخمدان‌ها، اختلالات هورمونی و پرسش‌های رایج سلامت زنان.</p></article>
+    <article class="card"><div class="ico">🧬</div><h3>آموزش باروری و ناباروری</h3><p>آشنایی با مفاهیم پایه باروری، عوامل اثرگذار و مسیرهای ارزیابی پزشکی ناباروری.</p></article>
+    <article class="card"><div class="ico">🤍</div><h3>سلامت باروری مردان</h3><p>اطلاعات عمومی درباره سلامت باروری مردان و آشنایی با آزمایش‌ها و شاخص‌های مرتبط.</p></article>
+    <article class="card"><div class="ico">👶</div><h3>آمادگی پیش از بارداری</h3><p>آموزش نکات عمومی آمادگی برای بارداری و اهمیت مراقبت و بررسی‌های پیش از بارداری.</p></article>
+    <article class="card"><div class="ico">🔎</div><h3>آشنایی با آزمایش‌ها</h3><p>توضیح ساده اصطلاحات و آزمایش‌های رایج برای کمک به درک بهتر اطلاعات ارائه‌شده از سوی پزشک.</p></article>
+    <article class="card"><div class="ico">📚</div><h3>دانستنی‌های سلامت</h3><p>مقاله‌ها و نکته‌های آموزشی برای افزایش سواد سلامت و تصمیم‌گیری آگاهانه‌تر.</p></article>
+  </div>
+</div></section>
+
+<section class="about" id="about"><div class="wrap about-grid">
+  <div class="about-box"><span class="eyebrow">درباره سلامتی کریمی</span><h2>همراهی آگاهانه، بدون وعده‌های غیرواقعی</h2><p>مسائل باروری ممکن است پیچیده و پراسترس باشند. رویکرد ما ارائه آموزش و مشاوره در محدوده صلاحیت مشاوره‌ای، پاسخ‌گویی آگاهی‌بخش و کمک به شناخت بهتر مسیر مراجعه به متخصص است.</p><p class="notice">سلامتی کریمی مرکز درمانی یا مطب پزشکی نیست. خدمات این مجموعه شامل تشخیص بیماری، تجویز دارو، تفسیر تخصصی آزمایش یا تضمین بارداری نمی‌شود.</p></div>
+  <div><h2 style="color:var(--navy)">اصول فعالیت ما</h2><ul class="ticks"><li>ارائه مطالب آموزشی با زبان ساده و روشن</li><li>توجه هم‌زمان به سلامت باروری زنان و مردان</li><li>پرهیز از وعده قطعی درباره بارداری یا درمان</li><li>توصیه به مراجعه به پزشک برای تشخیص و درمان</li><li>حفظ احترام، محرمانگی و کرامت مخاطبان</li></ul></div>
+</div></section>
+
+<section><div class="wrap"><div class="cta"><div><h2>برای پرسش‌های آموزشی با ما در ارتباط باشید</h2><p>از راه‌های ارتباطی زیر با مجموعه سلامتی کریمی تماس بگیرید.</p></div><a class="btn" href="#contact">ارتباط با مجموعه</a></div></div></section>
+
+<section id="contact"><div class="wrap">
+  <div class="section-head"><h2>راه‌های ارتباطی</h2><p>برای پیگیری مطالب آموزشی و هماهنگی ارتباط مشاوره‌ای از راه‌های زیر استفاده کنید.</p></div>
+  <div class="contact-grid">
+    <div class="contact-item"><small>تماس تلفنی</small><strong>۰۹۰۳۴۶۸۶۳۵۸</strong><p><a class="btn" href="tel:+989034686358">تماس با مجموعه</a></p></div>
+    <div class="contact-item"><small>واتساپ</small><strong>۰۹۰۳۴۶۸۶۳۵۸</strong><p><a class="btn" href="https://wa.me/989034686358" target="_blank" rel="noopener">گفت‌وگو در واتساپ</a></p></div>
+    <div class="contact-item"><small>کانال ایتا</small><strong>SalamatiiKarimii@</strong><p><a class="btn" href="https://eitaa.com/SalamatiiKarimii" target="_blank" rel="noopener">ورود به کانال ایتا</a></p></div>
+  </div>
+</div></section>
+</main>
+<footer><div class="wrap foot"><span>سلامتی کریمی</span><span>مطالب این وب‌سایت صرفاً آموزشی و مشاوره‌ای است و جایگزین خدمات پزشکی نیست.</span></div></footer>
+</body></html>
