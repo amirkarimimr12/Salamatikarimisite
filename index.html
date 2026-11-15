@@ -307,6 +307,11 @@
       document.getElementById('phone').value = phone;
       const message = `سلام، از طریق وب‌سایت سلامتی کریمی درخواست مشاوره دارم.\nنام: ${name}\nشماره تماس: ${phone}\nموضوع: ${topic}`;
       const whatsappUrl = 'https://wa.me/989034686358?text=' + encodeURIComponent(message);
+      // Open a blank tab during the original user gesture so popup blockers do not
+      // prevent WhatsApp from opening after the asynchronous Netlify submission.
+      const whatsappWindow = window.open('about:blank', '_blank');
+      if (whatsappWindow) whatsappWindow.opener = null;
+
       const submitButton = leadForm.querySelector('button[type="submit"]');
       submitButton.disabled = true;
       submitButton.textContent = 'در حال ثبت درخواست…';
@@ -321,11 +326,22 @@
           body: new URLSearchParams(formData).toString()
         });
         if (!response.ok) throw new Error('Form submission failed');
-        formStatus.textContent = 'درخواست شما ثبت شد. اکنون واتساپ باز می‌شود؛ پیام را بررسی کنید و خودتان دکمه ارسال را بزنید.';
+        formStatus.textContent = 'درخواست شما ثبت شد. پیام واتساپ آماده است؛ آن را بررسی کنید و فقط در صورت تمایل خودتان ارسال کنید.';
       } catch (error) {
-        formStatus.textContent = 'ثبت آنلاین درخواست انجام نشد. واتساپ باز می‌شود؛ پیام را بررسی و در صورت تمایل ارسال کنید.';
+        formStatus.textContent = 'ثبت آنلاین درخواست انجام نشد. می‌توانید پیام آماده واتساپ را بررسی و در صورت تمایل ارسال کنید.';
       } finally {
-        window.location.href = whatsappUrl;
+        if (whatsappWindow && !whatsappWindow.closed) {
+          whatsappWindow.location.href = whatsappUrl;
+        } else {
+          const whatsappLink = document.createElement('a');
+          whatsappLink.href = whatsappUrl;
+          whatsappLink.target = '_blank';
+          whatsappLink.rel = 'noopener noreferrer';
+          whatsappLink.textContent = 'باز کردن پیام آماده در واتساپ';
+          whatsappLink.style.display = 'inline-block';
+          whatsappLink.style.marginTop = '8px';
+          formStatus.append(' ', whatsappLink);
+        }
         submitButton.disabled = false;
         submitButton.textContent = 'ثبت درخواست مشاوره';
       }
