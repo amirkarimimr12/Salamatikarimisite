@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ورود و ثبت‌نام | سلامتی کریمی</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f0f7f5;
+      color: #19313d;
+      font-family: Vazirmatn, Tahoma, sans-serif;
+    }
+
+    .container {
+      max-width: 450px;
+      margin: 35px auto;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 35px #123b5215;
+    }
+
+    h1 {
+      color: #123b52;
+      text-align: center;
+      font-size: 23px;
+    }
+
+    p { text-align: center; }
+
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border: 1px solid #ccdcd8;
+      border-radius: 10px;
+      font: inherit;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: 0;
+      border-radius: 10px;
+      background: #168b86;
+      color: white;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: .6; }
+
+    .secondary {
+      background: #123b52;
+    }
+
+    #status {
+      color: #168b86;
+      overflow-wrap: anywhere;
+    }
+
+    a { color: #168b86; }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <section class="card">
+      <h1>سلامتی کریمی</h1>
+      <p>ورود و ساخت حساب کاربری</p>
+
+      <form id="auth-form">
+        <label for="name">نام و نام خانوادگی (برای ثبت‌نام)</label>
+        <input id="name" type="text" autocomplete="name"
+          placeholder="نام شما">
+
+        <label for="phone">شماره تماس (برای ثبت‌نام)</label>
+        <input id="phone" type="tel" autocomplete="tel"
+          placeholder="شماره تماس">
+
+        <label for="email">ایمیل</label>
+        <input id="email" type="email" required
+          autocomplete="email" placeholder="ایمیل شما">
+
+        <label for="password">رمز عبور</label>
+        <input id="password" type="password" required
+          minlength="8" autocomplete="current-password"
+          placeholder="حداقل ۸ نویسه">
+
+        <button type="button" id="signup">
+          ساخت حساب کاربری
+        </button>
+
+        <button type="submit" class="secondary">
+          ورود به حساب
+        </button>
+      </form>
+
+      <p id="status" role="status" aria-live="polite"></p>
+
+      <p><a href="index.html">بازگشت به صفحه اصلی سایت</a></p>
+    </section>
+  </main>
+
+  <script type="module">
+    import { supabase } from './supabase-client.js';
+
+    const form = document.getElementById('auth-form');
+    const status = document.getElementById('status');
+    const signupButton = document.getElementById('signup');
+
+    signupButton.addEventListener('click', async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+
+      if (!email || password.length < 8) {
+        status.textContent = 'ایمیل معتبر و رمز حداقل ۸ نویسه وارد کنید.';
+        return;
+      }
+
+      signupButton.disabled = true;
+      status.textContent = 'در حال ساخت حساب...';
+
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: name,
+              phone: phone
+            },
+            emailRedirectTo: location.href
+          }
+        });
+
+        if (error) throw error;
+
+        if (data.session) {
+          status.textContent = 'حساب ساخته شد. خوش آمدید!';
+        } else {
+          status.textContent =
+            'حساب ساخته شد. لطفاً ایمیل خود را برای تأیید بررسی کنید.';
+        }
+
+      } catch (error) {
+        status.textContent = 'خطا: ' + error.message;
+      } finally {
+        signupButton.disabled = false;
+      }
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      status.textContent = 'در حال ورود...';
+
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+
+        status.textContent = 'ورود موفقیت‌آمیز بود.';
+
+        setTimeout(() => {
+          location.href = './index.html';
+        }, 1000);
+
+      } catch (error) {
+        status.textContent = 'خطا: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html>
