@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>درخواست مشاوره | سلامتی کریمی</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:#f0f7f5;color:#19313d;font-family:Vazirmatn,Tahoma,sans-serif}
+main{max-width:500px;margin:35px auto;background:white;padding:25px;border-radius:18px;box-shadow:0 10px 35px #123b5215}
+h1{color:#123b52;text-align:center;font-size:23px}
+label{display:block;margin-top:15px}
+input,select,textarea{width:100%;padding:12px;margin-top:6px;border:1px solid #ccdcd8;border-radius:10px;font:inherit;background:white}
+textarea{min-height:110px;resize:vertical}
+button{width:100%;padding:13px;margin-top:20px;border:0;border-radius:10px;background:#168b86;color:white;font:inherit;cursor:pointer}
+button:disabled{opacity:.6}
+#status{line-height:2;color:#168b86}
+a{color:#168b86}
+</style>
+</head>
+<body>
+<main>
+<h1>درخواست مشاوره</h1>
+<p>برای ارتباط با مشاور، فرم زیر را تکمیل کنید.</p>
+
+<form id="request-form">
+<label for="full_name">نام و نام خانوادگی</label>
+<input id="full_name" name="full_name" required minlength="2" maxlength="120">
+
+<label for="phone">شماره تماس</label>
+<input id="phone" name="phone" type="tel" required minlength="7" maxlength="30">
+
+<label for="topic">موضوع درخواست</label>
+<select id="topic" name="topic" required>
+<option value="مشاوره عمومی">مشاوره عمومی</option>
+<option value="سلامت و تغذیه">سلامت و تغذیه</option>
+<option value="سلامت بانوان">سلامت بانوان</option>
+<option value="سلامت آقایان">سلامت آقایان</option>
+<option value="سایر موارد">سایر موارد</option>
+</select>
+
+<label for="message">توضیحات</label>
+<textarea id="message" name="message" maxlength="2000" placeholder="توضیحات خود را بنویسید..."></textarea>
+
+<button id="submit-button" type="submit">ثبت درخواست مشاوره</button>
+</form>
+
+<p id="status" role="status" aria-live="polite"></p>
+<p><a href="index.html">بازگشت به صفحه اصلی</a></p>
+</main>
+
+<script type="module">
+import { supabase } from './supabase-client.js';
+
+const form = document.getElementById('request-form');
+const status = document.getElementById('status');
+const button = document.getElementById('submit-button');
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  button.disabled = true;
+  status.textContent = 'در حال ثبت درخواست...';
+
+  try {
+    const values = new FormData(form);
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+      .from('contact_requests')
+      .insert({
+        full_name: String(values.get('full_name')).trim(),
+        phone: String(values.get('phone')).trim(),
+        topic: String(values.get('topic')),
+        message: String(values.get('message') || '').trim() || null,
+        user_id: user?.id ?? null
+      });
+
+    if (error) throw error;
+
+    form.reset();
+    status.textContent = 'درخواست شما با موفقیت ثبت شد. سپاس از اعتمادتان.';
+  } catch (error) {
+    console.error(error);
+    status.textContent = 'ثبت درخواست انجام نشد. لطفاً دوباره تلاش کنید.';
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
