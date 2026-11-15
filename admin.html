@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>پنل مدیریت | سلامتی کریمی</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
+*{box-sizing:border-box}
+body{margin:0;padding:18px;background:#f0f7f5;color:#19313d;font-family:Vazirmatn,Tahoma,sans-serif}
+main{max-width:850px;margin:25px auto}
+header,.item{background:white;border:1px solid #e0eae7;border-radius:16px;padding:20px;margin-bottom:15px}
+h1{color:#123b52;font-size:23px}
+button,select{font:inherit;padding:9px 13px;border:0;border-radius:9px;margin:5px}
+button{background:#168b86;color:white;cursor:pointer}
+#status{line-height:2}
+.item p{overflow-wrap:anywhere}
+a{color:#168b86}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>پنل مدیریت سلامتی کریمی</h1>
+<p id="status">در حال بررسی دسترسی...</p>
+<button id="refresh" hidden>به‌روزرسانی</button>
+<button id="logout" hidden>خروج</button>
+</header>
+<section id="requests"></section>
+<p><a href="index.html">بازگشت به سایت</a></p>
+</main>
+
+<script type="module">
+import { supabase } from './supabase-client.js';
+
+const status = document.getElementById('status');
+const list = document.getElementById('requests');
+const refresh = document.getElementById('refresh');
+const logout = document.getElementById('logout');
+
+const { data: { user } } = await supabase.auth.getUser();
+
+if (!user) {
+  status.textContent = 'ابتدا وارد حساب کاربری شوید.';
+} else {
+  const { data: admin, error } = await supabase
+    .from('admin_users')
+    .select('user_id')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error || !admin) {
+    status.textContent = 'این حساب هنوز دسترسی مدیریت ندارد.';
+  } else {
+    status.textContent = 'خوش آمدید. دسترسی مدیریت تأیید شد.';
+    refresh.hidden = false;
+    logout.hidden = false;
+    await loadRequests();
+  }
+}
+
+async function loadRequests() {
+  list.textContent = 'در حال دریافت درخواست‌ها...';
+
+  const { data, error } = await supabase
+    .from('contact_requests')
+    .select('id,full_name,phone,topic,message,status,created_at')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    list.textContent = 'دریافت درخواست‌ها ناموفق بود.';
+    return;
+  }
+
+  list.replaceChildren();
+
+  if (!data.length) {
+    list.textContent = 'هنوز درخواستی ثبت نشده است.';
+    return;
+  }
+
+  for (const item of data) {
+    const card = document.createElement('article');
+    card.className = 'item';
+
+    function addLine(label, value) {
+      const p = document.createElement('p');
+      const strong = document.createElement('strong');
+      strong.textContent = label + ': ';
+      p.append(strong, document.createTextNode(value || '—'));
+      card.append(p);
+    }
+
+    addLine('نام', item.full_name);
+    addLine('شماره تماس', item.phone);
+    addLine('موضوع', item.topic);
+    addLine('توضیحات', item.message);
+    addLine('تاریخ', new Date(item.created_at).toLocaleString('fa-IR'));
+
+    const select = document.createElement('select');
+
+    const options = [
+      ['new', 'جدید'],
+      ['in_progress', 'در حال پیگیری'],
+      ['closed', 'بسته شده']
+    ];
+
+    for (const [value, label] of options) {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = label;
+      option.selected = item.status === value;
+      select.append(option);
+    }
+
+    select.addEventListener('change', async () => {
+      const { error } = await supabase
+        .from('contact_requests')
+        .update({ status: select.value })
+        .eq('id', item.id);
+
+      if (error) {
+        status.textContent = 'ذخیره وضعیت انجام نشد.';
+      } else {
+        status.textContent = 'وضعیت درخواست ذخیره شد.';
+      }
+    });
+
+    card.append('وضعیت درخواست: ', select);
+    list.append(card);
+  }
+}
+
+refresh.addEventListener('click', loadRequests);
+
+logout.addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  location.href = './auth.html';
+});
+</script>
+</body>
+</html>
