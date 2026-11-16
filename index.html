@@ -221,15 +221,17 @@
           <div class="icon">📣</div>
           <h3>کانال ایتا</h3>
           <p>مطالب آموزشی سلامتی کریمی را دنبال کنید.</p>
-          <a class="btn" href="https://eitaa.com/SalamatiiKarimii" target="_blank" rel="noopener noreferrer">ورود به کانال ایتا</a>
+          <a class="btn" href="https://eitaa.com/SalamatiKarimii" target="_blank" rel="noopener noreferrer">ورود به کانال ایتا</a>
         </article>
       </div>
 
       <div style="max-width:760px;margin:28px auto 0">
-        <form id="leadForm">
+        <form id="leadForm" name="consultation-request" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="consultation-request">
+          <p hidden><label>این قسمت را خالی بگذارید: <input name="bot-field"></label></p>
           <div>
             <label for="name">نام و نام خانوادگی</label>
-            <input id="name" name="name" type="text" autocomplete="name" required placeholder="نام شما">
+            <input id="name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="نام شما">
           </div>
           <div>
             <label for="phone">شماره تماس</label>
@@ -248,12 +250,12 @@
             </select>
           </div>
           <div class="full">
-            <label for="message">توضیحات (اختیاری)</label>
-            <textarea id="message" name="message" placeholder="موضوع یا پرسش خود را بنویسید"></textarea>
+            <label><input id="consent" name="consent" type="checkbox" value="yes" required style="width:auto;margin-left:8px">با ثبت درخواست، با ارسال نام، شماره تماس و موضوع انتخابی برای پیگیری موافقم.</label>
           </div>
           <div class="full">
-            <button class="btn" type="submit">ارسال درخواست در واتساپ</button>
-            <p class="hint">با زدن این دکمه، پیام شما در واتساپ آماده ارسال می‌شود؛ اطلاعات به‌صورت خودکار در سایت ذخیره نمی‌شود.</p>
+            <button class="btn" type="submit">ثبت درخواست مشاوره</button>
+            <p class="hint">پس از ثبت، واتساپ با پیام آماده باز می‌شود. پیام را بررسی و در صورت تمایل خودتان ارسال کنید. لطفاً اطلاعات یا جزئیات پزشکی و حساس را در این فرم ننویسید.</p>
+            <p id="formStatus" class="hint full" role="status" aria-live="polite"></p>
           </div>
         </form>
       </div>
@@ -275,18 +277,74 @@
   document.getElementById('year').textContent = new Date().getFullYear();
 
   const leadForm = document.getElementById('leadForm');
+  const formStatus = document.getElementById('formStatus');
+
+  function toEnglishDigits(value) {
+    return value.replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+      .replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+  }
 
   if (leadForm) {
-    leadForm.addEventListener('submit', function(e) {
+    leadForm.addEventListener('submit', async function(e) {
       e.preventDefault();
+      if (!leadForm.reportValidity()) return;
 
-      const d = new FormData(this);
+      const name = document.getElementById('name').value.trim();
+      const rawPhone = toEnglishDigits(document.getElementById('phone').value).replace(/[\s\-()]/g, '');
+      const topic = document.getElementById('topic').value;
+      let phone = rawPhone;
+      if (phone.startsWith('+98')) phone = '0' + phone.slice(3);
+      else if (phone.startsWith('0098')) phone = '0' + phone.slice(4);
 
-      const msg = `سلام، از طریق وب‌سایت سلامتی کریمی پیام می‌دهم.\nنام: ${d.get('name')}\nشماره تماس: ${d.get('phone')}\nموضوع: ${d.get('topic')}\nتوضیحات: ${d.get('message') || 'ندارد'}`;
+      if (!/^09\d{9}$/.test(phone)) {
+        const phoneField = document.getElementById('phone');
+        phoneField.setCustomValidity('شماره موبایل معتبر وارد کنید؛ مانند ۰۹۱۲۱۲۳۴۵۶۷');
+        phoneField.reportValidity();
+        phoneField.addEventListener('input', () => phoneField.setCustomValidity(''), { once: true });
+        return;
+      }
 
-      const url = 'https://wa.me/989034686358?text=' + encodeURIComponent(msg);
+      document.getElementById('phone').value = phone;
+      const message = `سلام، از طریق وب‌سایت سلامتی کریمی درخواست مشاوره دارم.\nنام: ${name}\nشماره تماس: ${phone}\nموضوع: ${topic}`;
+      const whatsappUrl = 'https://wa.me/989034686358?text=' + encodeURIComponent(message);
+      // Open a blank tab during the original user gesture so popup blockers do not
+      // prevent WhatsApp from opening after the asynchronous Netlify submission.
+      const whatsappWindow = window.open('about:blank', '_blank');
+      if (whatsappWindow) whatsappWindow.opener = null;
 
-      window.open(url, '_blank', 'noopener,noreferrer');
+      const submitButton = leadForm.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'در حال ثبت درخواست…';
+      formStatus.textContent = 'در حال ثبت امن درخواست…';
+
+      const formData = new FormData(leadForm);
+      formData.set('phone', phone);
+      try {
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        });
+        if (!response.ok) throw new Error('Form submission failed');
+        formStatus.textContent = 'درخواست شما ثبت شد. پیام واتساپ آماده است؛ آن را بررسی کنید و فقط در صورت تمایل خودتان ارسال کنید.';
+      } catch (error) {
+        formStatus.textContent = 'ثبت آنلاین درخواست انجام نشد. می‌توانید پیام آماده واتساپ را بررسی و در صورت تمایل ارسال کنید.';
+      } finally {
+        if (whatsappWindow && !whatsappWindow.closed) {
+          whatsappWindow.location.href = whatsappUrl;
+        } else {
+          const whatsappLink = document.createElement('a');
+          whatsappLink.href = whatsappUrl;
+          whatsappLink.target = '_blank';
+          whatsappLink.rel = 'noopener noreferrer';
+          whatsappLink.textContent = 'باز کردن پیام آماده در واتساپ';
+          whatsappLink.style.display = 'inline-block';
+          whatsappLink.style.marginTop = '8px';
+          formStatus.append(' ', whatsappLink);
+        }
+        submitButton.disabled = false;
+        submitButton.textContent = 'ثبت درخواست مشاوره';
+      }
     });
   }
 </script>
