@@ -1,0 +1,32 @@
+name: Eitaa scheduled publishing
+
+on:
+  schedule:
+    # Tehran time (UTC+03:30): 08:30, 10:00, 11:30, 13:00, 14:30, 16:00, 18:00, 19:30, 21:00
+    - cron: "0 5,8,11,14,17 * * *"
+    - cron: "30 6,9,12,16,17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eitaa-scheduled-publishing
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Publish educational post
+        env:
+          EITAAYAR_TOKEN: ${{ secrets.EITAAYAR_TOKEN }}
+          EITAAYAR_CHAT_ID: ${{ secrets.EITAAYAR_CHAT_ID }}
+        run: python scripts/eitaayar_publisher.py
