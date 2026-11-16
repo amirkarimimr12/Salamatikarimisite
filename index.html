@@ -221,7 +221,7 @@
           <div class="icon">📣</div>
           <h3>کانال ایتا</h3>
           <p>مطالب آموزشی سلامتی کریمی را دنبال کنید.</p>
-          <a class="btn" href="https://eitaa.com/SalamatiiKarimii" target="_blank" rel="noopener noreferrer">ورود به کانال ایتا</a>
+          <a class="btn" href="https://eitaa.com/SalamatiKarimii" target="_blank" rel="noopener noreferrer">ورود به کانال ایتا</a>
         </article>
       </div>
 
@@ -248,15 +248,16 @@
             </select>
           </div>
           <div class="full">
-            <label for="message">توضیحات (اختیاری)</label>
-            <textarea id="message" name="message" placeholder="موضوع یا پرسش خود را بنویسید"></textarea>
+            <label style="display:flex;align-items:flex-start;gap:9px;font-weight:500">
+              <input id="consent" name="consent" type="checkbox" required style="width:auto;margin-top:7px">
+              <span>با آماده‌سازی پیام و باز شدن واتساپ موافقم. می‌دانم پیام فقط پس از بررسی و ارسال خودم در واتساپ فرستاده می‌شود.</span>
+            </label>
           </div>
           <div class="full">
-            <button class="btn" type="submit">ارسال درخواست در واتساپ</button>
-            <p class="hint">با زدن این دکمه، پیام شما در واتساپ آماده ارسال می‌شود؛ اطلاعات به‌صورت خودکار در سایت ذخیره نمی‌شود.</p>
+            <button class="btn" type="submit">ثبت درخواست مشاوره</button>
+            <p class="hint">لطفاً اطلاعات پزشکی، جواب آزمایش یا جزئیات حساس را در این فرم وارد نکنید. پیام فقط در واتساپ آماده می‌شود و خودکار ارسال یا در سایت ذخیره نمی‌شود.</p>
+            <p id="formStatus" class="hint" role="status" aria-live="polite"></p>
           </div>
-        </form>
-      </div>
     </div>
   </section>
 </main>
@@ -279,14 +280,26 @@
   if (leadForm) {
     leadForm.addEventListener('submit', function(e) {
       e.preventDefault();
-
-      const d = new FormData(this);
-
-      const msg = `سلام، از طریق وب‌سایت سلامتی کریمی پیام می‌دهم.\nنام: ${d.get('name')}\nشماره تماس: ${d.get('phone')}\nموضوع: ${d.get('topic')}\nتوضیحات: ${d.get('message') || 'ندارد'}`;
-
+      const status = document.getElementById('formStatus');
+      if (!leadForm.reportValidity()) return;
+      const d = new FormData(leadForm);
+      const phone = String(d.get('phone') || '')
+        .replace(/[۰-۹]/g, ch => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(ch)))
+        .replace(/[٠-٩]/g, ch => String('٠١٢٣٤٥٦٧٨٩'.indexOf(ch)))
+        .replace(/[\s-]/g, '');
+      if (!/^(?:\+?98|0)?9\d{9}$/.test(phone)) {
+        const field = document.getElementById('phone');
+        field.setCustomValidity('شماره موبایل را به شکل معتبر وارد کنید.');
+        field.reportValidity();
+        field.setCustomValidity('');
+        return;
+      }
+      const msg = `سلام، از طریق وب‌سایت سلامتی کریمی درخواست مشاوره دارم.\nنام: ${d.get('name')}\nشماره تماس: ${d.get('phone')}\nموضوع: ${d.get('topic')}`;
       const url = 'https://wa.me/989034686358?text=' + encodeURIComponent(msg);
-
-      window.open(url, '_blank', 'noopener,noreferrer');
+      const opened = window.open(url, '_blank');
+      status.textContent = opened
+        ? 'واتساپ باز شد. لطفاً متن آماده‌شده را بررسی کنید و در صورت تمایل خودتان ارسال کنید.'
+        : 'مرورگر بازشدن پنجره را مسدود کرد. لطفاً اجازه بازشدن واتساپ را بدهید.';
     });
   }
 </script>
