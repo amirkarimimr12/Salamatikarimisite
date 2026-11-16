@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 TOKEN = os.environ.get("EITAAYAR_TOKEN", "").strip()
 CHAT_ID = os.environ.get("EITAAYAR_CHAT_ID", "SalamatiKarimii").strip().lstrip("@")
-API_URL = f"https://eitaayar.ir/api/{TOKEN}/sendMessage"
+API_ROOT = f"https://eitaayar.ir/api/{TOKEN}"
 
 # One post per slot. The seven variants rotate by weekday.
 SLOTS = [
@@ -105,7 +105,7 @@ def main():
         print("Missing EITAAYAR_CHAT_ID", file=sys.stderr)
         sys.exit(2)
 
-    now = datetime.now(ZoneInfo("Asia/Tehran"))
+    mode = os.environ.get("EITAAYAR_MODE", "publish").strip().lower()\n    if mode == "check":\n        req = urllib.request.Request(f"{API_ROOT}/getMe", method="GET")\n        try:\n            with urllib.request.urlopen(req, timeout=30) as response:\n                result = json.loads(response.read().decode("utf-8"))\n        except Exception as exc:\n            print(f"Eitaayar connection check failed: {exc}", file=sys.stderr)\n            sys.exit(1)\n        if not result.get("ok"):\n            print("Eitaayar returned ok=false: " + json.dumps(result, ensure_ascii=False), file=sys.stderr)\n            sys.exit(1)\n        print("Eitaayar token is valid. Bot: " + str(result.get("result", {}).get("username", "connected")))\n        return\n\n    now = datetime.now(ZoneInfo("Asia/Tehran"))
     # Match the scheduled local time, allowing GitHub's scheduler some delay.
     minutes = now.hour * 60 + now.minute
     slot = min(SLOTS, key=lambda item: abs(minutes - (int(item[0][:2]) * 60 + int(item[0][3:]))))
@@ -117,7 +117,7 @@ def main():
     weekday = now.weekday()
     message = slot[1][weekday]
     payload = urllib.parse.urlencode({"chat_id": CHAT_ID, "text": message, "title": "سلامتی کریمی"}).encode()
-    request = urllib.request.Request(API_URL, data=payload, method="POST")
+    request = urllib.request.Request(f"{API_ROOT}/sendMessage", data=payload, method="POST")
     request.add_header("Content-Type", "application/x-www-form-urlencoded")
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
