@@ -35,5 +35,4 @@ jobs:
       - name: Publish educational post
         env:
           EITAAYAR_TOKEN: ${{ secrets.EITAAYAR_TOKEN }}
-          EITAAYAR_CHAT_ID: ${{ secrets.EITAAYAR_CHAT_ID }}
         run: python scripts/eitaayar_publisher.py
