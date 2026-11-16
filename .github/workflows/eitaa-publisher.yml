@@ -13,6 +13,15 @@ on:
     - cron: "0 16 * * *"
     - cron: "30 17 * * *"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run a connection check or publish one post"
+        required: true
+        default: "check"
+        type: choice
+        options:
+          - check
+          - publish
 
 permissions:
   contents: read
@@ -35,4 +44,5 @@ jobs:
       - name: Publish educational post
         env:
           EITAAYAR_TOKEN: ${{ secrets.EITAAYAR_TOKEN }}
+          EITAAYAR_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'publish' }}
         run: python scripts/eitaayar_publisher.py
