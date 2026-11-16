@@ -9,7 +9,7 @@ if [ -z "${CACHED_COMMIT_REF:-}" ] || [ -z "${COMMIT_REF:-}" ]; then
   exit 1
 fi
 
-if git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- '*.html' '*.js' '*.css' 'assets/**' 'public/**'; then
+if git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- '*.html' '*.js' '*.css' 'assets/**' 'public/**' 'netlify.toml'; then
   echo "No website source changes detected. Skipping Netlify build."
   exit 0
 fi
